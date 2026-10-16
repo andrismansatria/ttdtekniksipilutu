@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TTE Teknik Sipil UTU</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202e;--mut:#5d6b7e;--line:#dfe4eb;--pri:#0f3d6e;--pri2:#e8f0f9;--ok:#16794a;--okbg:#e5f5ec;--warn:#9a6200;--warnbg:#fdf3dc;--bad:#b42318;--badbg:#fdeceb}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--pri);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px}
+header .t{font-weight:700;letter-spacing:.2px}header .s{font-size:12px;opacity:.8}
+header .sp{flex:1}
+main{max-width:1080px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fff;color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:640px){.row{grid-template-columns:1fr}}
+button{font:inherit;border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 12px;border-radius:7px;cursor:pointer}
+button:hover{border-color:var(--pri)}
+button.p{background:var(--pri);border-color:var(--pri);color:#fff}
+button.g{background:var(--ok);border-color:var(--ok);color:#fff}
+button.r{color:var(--bad)}
+button:disabled{opacity:.5;cursor:default}
+header button{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button.on{background:var(--pri2);border-color:var(--pri);color:var(--pri);font-weight:600}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;border-bottom:1px solid var(--line);padding:8px 6px}
+.tbl td{border-bottom:1px solid var(--line);padding:9px 6px;vertical-align:top}
+.tbl td.act{white-space:nowrap;text-align:right}.tbl td.act button{padding:5px 9px;font-size:13px;margin-left:4px}
+.wrap{overflow-x:auto}
+.mut{color:var(--mut);font-size:13px}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;font-weight:600}
+.b-menunggu{background:var(--warnbg);color:var(--warn)}.b-ditandatangani{background:var(--okbg);color:var(--ok)}
+.b-ditolak,.b-dicabut{background:var(--badbg);color:var(--bad)}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.bar .sp{flex:1}
+.hide{display:none!important}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#16202e;color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;max-width:90vw;z-index:50}
+.modal{position:fixed;inset:0;background:rgba(10,20,35,.55);display:flex;align-items:center;justify-content:center;z-index:40;padding:16px}
+.modal .box{background:#fff;border-radius:10px;width:min(900px,100%);height:min(88vh,1000px);display:flex;flex-direction:column;overflow:hidden}
+.modal .hd{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.modal .hd b{flex:1}
+.modal iframe{flex:1;border:0;width:100%}
+.login{max-width:380px;margin:40px auto}
+.ver{max-width:620px;margin:20px auto}
+.status{border-radius:10px;padding:16px;margin-bottom:14px;display:flex;gap:12px;align-items:center}
+.status .ic{font-size:28px;line-height:1}
+.status b{font-size:18px;display:block}
+.s-ok{background:var(--okbg);color:var(--ok)}.s-bad{background:var(--badbg);color:var(--bad)}.s-warn{background:var(--warnbg);color:var(--warn)}
+dl{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;margin:0}
+dt{color:var(--mut);font-size:13px}dd{margin:0;word-break:break-word}
+@media(max-width:520px){dl{grid-template-columns:1fr}dd{margin-bottom:6px}}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--ink);font-size:14px}
+.chk input{width:auto}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--mut);cursor:pointer}
+.drop.on{border-color:var(--pri);background:var(--pri2)}
+/* penempatan stempel (seret & lepas) */
+#penempat{z-index:45}
+.pnav{display:flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap}
+.pnav button{padding:3px 10px}
+.pbody{flex:1;overflow:auto;background:#e6eaf0;padding:14px;display:flex;justify-content:center;align-items:flex-start}
+.pwrap{position:relative;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.2);cursor:crosshair;touch-action:none;user-select:none;-webkit-user-select:none}
+.pwrap canvas{display:block}
+.pstamp{position:absolute;left:0;top:0;cursor:grab;outline:2px dashed #1d6fd1;outline-offset:3px;touch-action:none;box-shadow:0 3px 14px rgba(15,61,110,.35)}
+.pstamp:active{cursor:grabbing}
+.pstamp:focus-visible{outline-style:solid}
+.pstamp-in{width:88px;height:88px;transform-origin:0 0;background:#fff;padding:4px;pointer-events:none}
+.pstamp-in svg{width:80px;height:80px;display:block}
+.pft{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.pft .chk{margin:0}.pft .sp{flex:1}
+.pft .tip{flex-basis:100%;color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="t">TTE Teknik Sipil UTU</div><div class="s">Tanda tangan elektronik berbasis QR — Ketua Program Studi</div></div>
+  <div class="sp"></div>
+  <span id="who" class="s"></span>
+  <button id="btnOut" class="hide" onclick="keluar()">Keluar</button>
+</header>
+<main>
+
+<!-- ===== Verifikasi publik ===== -->
+<section id="vVerify" class="ver hide">
+  <div class="card">
+    <h2>Verifikasi Dokumen</h2>
+    <div id="verOut" class="mut">Memeriksa…</div>
+  </div>
+  <div class="card hide" id="verCocok">
+    <h2>Cocokkan berkas yang Anda terima</h2>
+    <p class="mut">Pilih PDF yang Anda terima. Sistem menghitung sidik jarinya di perangkat Anda (berkas tidak diunggah) dan membandingkannya dengan catatan resmi.</p>
+    <input type="file" id="verFile" accept="application/pdf">
+    <div id="verHasil" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- ===== Login ===== -->
+<section id="vLogin" class="login hide">
+  <div class="card">
+    <h2>Masuk</h2>
+    <form onsubmit="masuk(event)">
+      <label>Kata sandi</label>
+      <input type="password" id="pw" autocomplete="current-password" required>
+      <div style="margin-top:14px"><button class="p" style="width:100%">Masuk</button></div>
+    </form>
+    <p class="mut" style="margin-bottom:0">Kata sandi Kaprodi untuk menandatangani, kata sandi admin untuk mengunggah surat.</p>
+  </div>
+  <div class="card">
+    <h2>Cek keaslian surat</h2>
+    <form onsubmit="event.preventDefault();location.search='?v='+encodeURIComponent(document.getElementById('cekId').value.trim())">
+      <label>ID verifikasi (tertera di bawah QR)</label>
+      <input id="cekId" placeholder="contoh: K7PM2-XQ4RT" required>
+      <div style="margin-top:10px"><button>Periksa</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- ===== Aplikasi ===== -->
+<section id="vApp" class="hide">
+  <div class="tabs" id="tabs">
+    <button data-t="antrean" class="on">Antrean <span id="nAntre"></span></button>
+    <button data-t="arsip">Arsip</button>
+    <button data-t="unggah">Unggah Surat</button>
+    <button data-t="stempel" class="kp">Pengaturan Stempel</button>
+  </div>
+
+  <div class="card" data-p="antrean">
+    <div class="bar">
+      <h2 style="margin:0">Menunggu tanda tangan</h2><div class="sp"></div>
+      <button class="g kp" id="btnBatch" onclick="tandaTanganTerpilih()" disabled>Tanda tangani terpilih</button>
+    </div>
+    <div class="wrap"><table class="tbl"><thead><tr>
+      <th class="kp" style="width:28px"><input type="checkbox" id="pilihSemua" style="width:auto"></th>
+      <th>Surat</th><th>Asal</th><th>Diunggah</th><th></th></tr></thead>
+      <tbody id="tbAntre"></tbody></table></div>
+  </div>
+
+  <div class="card hide" data-p="arsip">
+    <div class="bar"><h2 style="margin:0">Arsip surat</h2><div class="sp"></div>
+      <input id="cari" placeholder="Cari nomor, perihal, asal…" style="max-width:260px">
+      <select id="fStatus" style="max-width:170px"><option value="">Semua status</option><option>ditandatangani</option><option>ditolak</option><option>dicabut</option></select>
+    </div>
+    <div class="wrap"><table class="tbl"><thead><tr><th>Surat</th><th>Status</th><th>Tanggal TTE</th><th>ID</th><th></th></tr></thead>
+      <tbody id="tbArsip"></tbody></table></div>
+  </div>
+
+  <div class="card hide" data-p="unggah">
+    <h2>Unggah surat</h2>
+    <form id="fUnggah" onsubmit="unggah(event)">
+      <div class="row">
+        <div><label>Nomor surat</label><input name="nomor" placeholder="mis. 123/UN59.7/TS/2026"></div>
+        <div><label>Tanggal surat</label><input name="tanggal_surat" type="date"></div>
+      </div>
+      <label>Perihal *</label><input name="perihal" required>
+      <label>Asal / tujuan surat</label><input name="pengirim" placeholder="mis. Dekan Fakultas Teknik">
+      <label>Berkas PDF * (maks. 3 MB)</label>
+      <div class="drop" id="drop">Klik atau seret PDF ke sini<div id="namaFile" class="mono"></div></div>
+      <input type="file" id="fileIn" accept="application/pdf" class="hide">
+      <label class="chk kp"><input type="checkbox" id="langsung" checked> Langsung saya tanda tangani setelah diunggah (posisi stempel diatur dulu)</label>
+      <div style="margin-top:14px"><button class="p" id="btnUnggah">Unggah</button></div>
+    </form>
+  </div>
+
+  <div class="card hide kp" data-p="stempel">
+    <h2>Pengaturan stempel QR</h2>
+    <p class="mut">Setiap kali menandatangani satu surat, stempel bisa digeser langsung di atas suratnya. Posisi bawaan di sini menjadi titik awalnya, dan dipakai apa adanya saat menandatangani banyak surat sekaligus.</p>
+    <div class="row">
+      <div><label>Halaman bawaan</label><select id="sHalaman" onchange="ubahHalamanBawaan()">
+        <option value="terakhir">Halaman terakhir</option><option value="pertama">Halaman pertama</option><option value="semua">Semua halaman</option></select></div>
+      <div><label>Posisi bawaan saat ini</label><div id="sInfo" style="padding:9px 0"></div></div>
+    </div>
+    <div class="bar" style="margin-top:14px">
+      <button class="p" onclick="aturBawaan(null)">Seret posisi di halaman A4</button>
+      <button onclick="document.getElementById('aturIn').click()">Seret posisi di surat contoh…</button>
+      <button onclick="document.getElementById('ujiIn').click()">Uji hasil pada PDF…</button>
+      <input type="file" id="aturIn" accept="application/pdf" class="hide">
+      <input type="file" id="ujiIn" accept="application/pdf" class="hide">
+    </div>
+    <p class="mut">Identitas di stempel: <span id="idStempel"></span>. Ubah lewat variabel SIGNER_* di Vercel.</p>
+  </div>
+</section>
+</main>
+
+<div id="modal" class="modal hide"><div class="box">
+  <div class="hd"><b id="mJudul"></b><span id="mAksi"></span><button onclick="tutupModal()">Tutup</button></div>
+  <iframe id="mFrame" title="Pratinjau PDF"></iframe>
+</div></div>
+<div id="penempat" class="modal hide"><div class="box">
+  <div class="hd"><b id="pJudul"></b>
+    <span class="pnav"><button id="pPrev" aria-label="Halaman sebelumnya">‹</button><span id="pHal"></span><button id="pNext" aria-label="Halaman berikutnya">›</button></span>
+  </div>
+  <div class="pbody" id="pBody"><div class="pwrap" id="pWrap"><canvas id="pCanvas"></canvas><div id="pStamp" class="pstamp" tabindex="0" aria-label="QR tanda tangan, seret atau gunakan tombol panah"><div class="pstamp-in" id="pStampIn"></div></div></div></div>
+  <div class="pft">
+    <span class="tip">Seret QR ke tempat tanda tangan, atau klik langsung di bagian halaman yang diinginkan. Tombol panah menggeser sedikit demi sedikit.</span>
+    <label class="chk" id="pSemuaWrap"><input type="checkbox" id="pSemua"> Semua halaman</label>
+    <label class="chk" id="pBawaanWrap"><input type="checkbox" id="pBawaan"> Jadikan posisi bawaan</label>
+    <div class="sp"></div>
+    <button id="pBatal">Batal</button><button class="g" id="pOk"></button>
+  </div>
+</div></div>
+<div id="toast" class="hide"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtTgl = d => d ? new Date(d).toLocaleString('id-ID', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+const fmtHari = d => d ? new Date(d).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}) : '—';
+const fmtId = id => id ? id.slice(0,5) + '-' + id.slice(5) : '';
+const DEF_STEMPEL = {halaman:'terakhir', fx:null, fy:null, posisi:'kanan-bawah', jarakY:15, jarakX:15};
+
+const st = {token:null, role:null, rows:[], ttd:null, stempel:{...DEF_STEMPEL}, blobUrl:null};
+function simpanLokal(k,v){ try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k,v) }catch(e){} }
+function bacaLokal(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+
+function toast(m, ms=3200){ const t=$('#toast'); t.textContent=m; t.classList.remove('hide'); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.add('hide'), ms); }
+
+async function api(action, data, method){
+  const BACA = ['config','verify','list','file','log','settings'];
+  const opt = {method: method || (data && !BACA.includes(action) ? 'POST' : 'GET'), headers:{}};
+  let url = '/api?action=' + action;
+  if (opt.method === 'GET' && data) url += '&' + new URLSearchParams(data);
+  else if (data) { opt.headers['Content-Type']='application/json'; opt.body = JSON.stringify(data); }
+  if (st.token) opt.headers.Authorization = 'Bearer ' + st.token;
+  const r = await fetch(url, opt);
+  let j; try { j = await r.json(); } catch { throw new Error('Server tidak merespons dengan benar ('+r.status+').'); }
+  if (r.status === 401 && action !== 'login') { keluar(); }
+  if (!r.ok) throw new Error(j.error || ('Gagal ('+r.status+')'));
+  return j;
+}
+
+// ---------- base64 ----------
+function bytesKeB64(u8){ let s=''; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s); }
+function b64KeBytes(b){ const s=atob(b); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
+async function sha256Hex(u8){ const h=await crypto.subtle.digest('SHA-256', u8); return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+
+/*STAMP-START*/
+const STAMP_W = 88, STAMP_H = 88; // kotak QR ±3,1 cm, termasuk tepi putih
+const TANDA_BAWAAN = 'andrismansatria';
+// Tata letak QR beserta tulisan di tengahnya: tanda penandatangan + ID unik surat.
+// Koreksi galat level H (30%) membuat QR tetap terbaca walau bagian tengahnya (±9%) berisi tulisan kecil.
+function tataQR(url, id, tanda){
+  const qr = qrcode(0, 'H'); qr.addData(url); qr.make();
+  const n = qr.getModuleCount();
+  const ganjil = v => (v % 2 ? v : v + 1);
+  const s = String(id || '').toUpperCase();
+  const idTeks = s.length === 10 ? s.slice(0, 5) + '-' + s.slice(5) : s;
+  const baris = tanda ? [String(tanda), idTeks] : (s.length === 10 ? [s.slice(0, 5), s.slice(5)] : [s]);
+  const bw = ganjil(Math.round(n * (tanda ? 0.46 : 0.36))), bh = ganjil(Math.round(n * (tanda ? 0.18 : 0.22)));
+  const c0 = (n - bw) / 2, r0 = (n - bh) / 2;
+  const kotak = { c0, c1: c0 + bw - 1, r0, r1: r0 + bh - 1, bw, bh };
+  const diKotak = (r, k) => r >= kotak.r0 && r <= kotak.r1 && k >= kotak.c0 && k <= kotak.c1;
+  return { n, gelap: (r, k) => !diKotak(r, k) && qr.isDark(r, k), kotak, baris };
+}
+const tandaDari = ttd => (ttd && ttd.tanda != null ? ttd.tanda : TANDA_BAWAAN);
+// Posisi kotak stempel (koordinat PDF, titik kiri-bawah) pada halaman berukuran pw x ph.
+// set.fx / set.fy = letak sudut kiri-atas stempel sebagai pecahan lebar/tinggi halaman (hasil seret).
+function hitungKotak(set, pw, ph){
+  const mm = v => (Number(v) || 0) * 72 / 25.4;
+  let x, y;
+  if (set.fx != null && set.fy != null) {
+    x = set.fx * pw; y = ph - set.fy * ph - STAMP_H;
+  } else { // pengaturan lama (posisi tetap + jarak tepi)
+    const jx = mm(set.jarakX ?? 15), jy = mm(set.jarakY ?? 15);
+    x = set.posisi === 'kiri-bawah' ? jx : set.posisi === 'tengah-bawah' ? (pw - STAMP_W) / 2 : pw - STAMP_W - jx;
+    y = set.posisi === 'kanan-atas' ? ph - STAMP_H - jy : jy;
+  }
+  return { x: Math.max(0, Math.min(x, pw - STAMP_W)), y: Math.max(0, Math.min(y, ph - STAMP_H)) };
+}
+// Indeks halaman (0-based) yang diberi stempel.
+function halamanTarget(set, n){
+  if (set.halaman === 'semua') return [...Array(n).keys()];
+  if (set.halaman === 'pertama') return [0];
+  const k = parseInt(set.halaman, 10);
+  return [k >= 1 ? Math.min(k, n) - 1 : n - 1];
+}
+// Membubuhkan QR berisi ID verifikasi ke PDF. Mengembalikan Uint8Array PDF baru.
+async function bubuhkanStempel(pdfBytes, id, url, ttd, set){
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const doc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
+  const hitam = rgb(0.08, 0.1, 0.14), biru = rgb(0.06, 0.24, 0.43);
+  const fb = await doc.embedFont(StandardFonts.HelveticaBold);
+  const fr = await doc.embedFont(StandardFonts.Helvetica);
+  const t = tataQR(url, id, tandaDari(ttd)), n = t.n;
+  const pages = doc.getPages();
+  const target = halamanTarget(set, pages.length).map(i => pages[i]);
+  const pad = 4, Q = STAMP_W - pad * 2, c = Q / n;
+  // tulisan kecil & seragam: satu ukuran huruf untuk semua baris, dengan ruang napas 1 modul di tepi
+  const adaTanda = !!tandaDari(ttd);
+  const huruf = t.baris.map((b, i) => (adaTanda && i === 0 ? fr : fb));
+  const warna = t.baris.map((b, i) => (adaTanda && i === 0 ? biru : hitam));
+  const lebarKotak = t.kotak.bw * c - 2 * c, jalur = (t.kotak.bh * c - c) / t.baris.length;
+  const fsSeragam = Math.min(jalur / 1.18, ...t.baris.map((b, i) => lebarKotak / huruf[i].widthOfTextAtSize(b, 1)));
+  const ukuran = t.baris.map(() => fsSeragam);
+
+  for (const page of target) {
+    const cb = page.getCropBox(); // area yang terlihat, sama dengan yang ditampilkan saat menyeret
+    let { x, y } = hitungKotak(set, cb.width, cb.height);
+    x += cb.x; y += cb.y;
+    // latar putih (tepi tenang) agar QR tetap terbaca di atas teks/kop
+    page.drawRectangle({ x, y, width: STAMP_W, height: STAMP_H, color: rgb(1, 1, 1) });
+    // QR digambar sebagai vektor agar tajam saat dicetak
+    const qx = x + pad, qy = y + pad;
+    for (let r = 0; r < n; r++) for (let k = 0; k < n; k++)
+      if (t.gelap(r, k)) page.drawRectangle({ x: qx + k * c, y: qy + Q - (r + 1) * c, width: c + 0.05, height: c + 0.05, color: hitam });
+    // tanda penandatangan + ID verifikasi di tengah QR
+    const atas = qy + Q - (t.kotak.r0 * c) - c / 2, cx = qx + Q / 2;
+    t.baris.forEach((b, i) => {
+      const fs = ukuran[i], w = huruf[i].widthOfTextAtSize(b, fs);
+      const by = atas - jalur * (i + 0.5) - fs * 0.36;
+      page.drawText(b, { x: cx - w / 2, y: by, size: fs, font: huruf[i], color: warna[i] });
+    });
+  }
+  doc.setKeywords(['TTE', 'Teknik Sipil UTU', id]);
+  doc.setModificationDate(new Date());
+  return await doc.save();
+}
+/*STAMP-END*/
+
+const urlVerifikasi = id => location.origin + location.pathname.replace(/index\.html$/, '') + '?v=' + id;
+
+// ---------- verifikasi publik ----------
+async function tampilVerifikasi(id){
+  $('#vVerify').classList.remove('hide');
+  $('#verCocok').classList.add('hide');
+  const out = $('#verOut');
+  try {
+    const d = await api('verify', {id});
+    if (!d.ditemukan) {
+      out.innerHTML = `<div class="status s-bad"><div class="ic">✕</div><div><b>Tidak terdaftar</b>ID <span class="mono">${esc(fmtId(id))}</span> tidak ditemukan dalam catatan tanda tangan elektronik Prodi Teknik Sipil UTU. Dokumen ini tidak dapat dipastikan keasliannya.</div></div>`;
+      return;
+    }
+    const sah = d.status === 'ditandatangani';
+    out.innerHTML = (sah
+      ? `<div class="status s-ok"><div class="ic">✓</div><div><b>Tanda tangan sah</b>Dokumen ini tercatat ditandatangani secara elektronik.</div></div>`
+      : `<div class="status s-bad"><div class="ic">!</div><div><b>Tanda tangan telah dicabut</b>${esc(d.catatan || '')}</div></div>`)
+      + `<dl>
+        <dt>Penandatangan</dt><dd><b>${esc(d.penandatangan.nama)}</b><br>${esc(d.penandatangan.jabatan)}<br>${esc(d.penandatangan.instansi)}</dd>
+        <dt>Nomor surat</dt><dd>${esc(d.nomor || '—')}</dd>
+        <dt>Perihal</dt><dd>${esc(d.perihal)}</dd>
+        <dt>Asal / tujuan</dt><dd>${esc(d.pengirim || '—')}</dd>
+        <dt>Tanggal surat</dt><dd>${fmtHari(d.tanggal_surat)}</dd>
+        <dt>Waktu tanda tangan</dt><dd>${fmtTgl(d.ditandatangani_pada)}</dd>
+        <dt>ID verifikasi</dt><dd class="mono">${esc(fmtId(d.id))}</dd>
+        <dt>SHA-256</dt><dd class="mono">${esc(d.hash_sha256)}</dd>
+      </dl>`;
+    $('#verCocok').classList.remove('hide');
+    $('#verFile').onchange = async e => {
+      const file = e.target.files[0]; if (!file) return;
+      const h = await sha256Hex(new Uint8Array(await file.arrayBuffer()));
+      $('#verHasil').innerHTML = h === d.hash_sha256
+        ? `<div class="status s-ok"><div class="ic">✓</div><div><b>Berkas identik</b>Isi berkas sama persis dengan yang ditandatangani.</div></div>`
+        : `<div class="status s-warn"><div class="ic">!</div><div><b>Berkas berbeda</b>Isi berkas tidak sama dengan versi yang ditandatangani. Berkas mungkin telah diubah, dicetak ulang, atau dipindai ulang.</div></div>`;
+    };
+  } catch (e) { out.textContent = e.message; }
+}
+
+// ---------- login ----------
+async function masuk(e){
+  e.preventDefault();
+  try {
+    const r = await api('login', {password: $('#pw').value});
+    st.token = r.token; st.role = r.role;
+    simpanLokal('tte_token', r.token); simpanLokal('tte_role', r.role);
+    $('#pw').value = '';
+    mulaiApp();
+  } catch (err) { toast(err.message); }
+}
+function keluar(){
+  st.token = st.role = null; simpanLokal('tte_token', null); simpanLokal('tte_role', null);
+  $('#vApp').classList.add('hide'); $('#btnOut').classList.add('hide'); $('#who').textContent='';
+  $('#vLogin').classList.remove('hide');
+}
+
+async function mulaiApp(){
+  $('#vLogin').classList.add('hide'); $('#vApp').classList.remove('hide'); $('#btnOut').classList.remove('hide');
+  $('#who').textContent = st.role === 'kaprodi' ? 'Kaprodi' : 'Admin prodi';
+  document.querySelectorAll('.kp').forEach(el => el.classList.toggle('hide', st.role !== 'kaprodi'));
+  try {
+    const [c, s] = await Promise.all([api('config'), api('settings')]);
+    st.ttd = c.penandatangan;
+    st.stempel = {...DEF_STEMPEL, ...(s.stempel || {})};
+    $('#idStempel').textContent = st.ttd.nama + ' — ' + st.ttd.jabatan;
+    isiFormStempel();
+  } catch (e) { toast(e.message); }
+  muat();
+}
+
+// ---------- daftar ----------
+async function muat(){
+  try { st.rows = await api('list'); gambar(); } catch (e) { toast(e.message); }
+}
+function judulSurat(r){
+  return `<b>${esc(r.perihal)}</b><div class="mut">${esc(r.nomor || 'Tanpa nomor')}${r.tanggal_surat ? ' · ' + fmtHari(r.tanggal_surat) : ''}</div>`;
+}
+function gambar(){
+  const kp = st.role === 'kaprodi';
+  const antre = st.rows.filter(r => r.status === 'menunggu');
+  $('#nAntre').textContent = antre.length ? '(' + antre.length + ')' : '';
+  $('#tbAntre').innerHTML = antre.length ? antre.map(r => `<tr>
+      ${kp ? `<td><input type="checkbox" class="pil" value="${r.id}" style="width:auto"></td>` : ''}
+      <td>${judulSurat(r)}</td><td>${esc(r.pengirim || '—')}</td>
+      <td class="mut">${fmtTgl(r.diunggah_pada)}<br>oleh ${esc(r.diunggah_oleh)}</td>
+      <td class="act"><button onclick="lihat('${r.id}','original')">Lihat</button>
+      ${kp ? `<button class="g" onclick="tandaTanganSatu('${r.id}')">Tanda tangani</button><button class="r" onclick="tolak('${r.id}')">Tolak</button>`
+           : `<button class="r" onclick="hapus('${r.id}')">Hapus</button>`}</td></tr>`).join('')
+    : `<tr><td colspan="5" class="mut">Tidak ada surat yang menunggu.</td></tr>`;
+  document.querySelectorAll('.pil').forEach(c => c.onchange = cekPilihan);
+  $('#pilihSemua').checked = false; cekPilihan();
+
+  const q = $('#cari').value.toLowerCase(), fs = $('#fStatus').value;
+  const arsip = st.rows.filter(r => r.status !== 'menunggu' && (!fs || r.status === fs)
+    && (!q || [r.nomor, r.perihal, r.pengirim, r.id].join(' ').toLowerCase().includes(q)));
+  $('#tbArsip').innerHTML = arsip.length ? arsip.map(r => `<tr>
+      <td>${judulSurat(r)}${r.catatan ? `<div class="mut">Catatan: ${esc(r.catatan)}</div>` : ''}</td>
+      <td><span class="badge b-${r.status}">${r.status}</span></td>
+      <td class="mut">${fmtTgl(r.ditandatangani_pada)}</td>
+      <td class="mono">${r.hash_sha256 ? fmtId(r.id) : '—'}</td>
+      <td class="act">${r.hash_sha256 ? `<button onclick="lihat('${r.id}','signed')">Lihat</button><button onclick="unduh('${r.id}')">Unduh</button><button onclick="salinTautan('${r.id}')">Tautan</button>` : `<button onclick="lihat('${r.id}','original')">Lihat</button>`}
+      ${kp && r.status === 'ditandatangani' ? `<button class="r" onclick="cabut('${r.id}')">Cabut</button>` : ''}
+      ${r.status === 'ditolak' ? `<button class="r" onclick="hapus('${r.id}')">Hapus</button>` : ''}</td></tr>`).join('')
+    : `<tr><td colspan="5" class="mut">Belum ada surat.</td></tr>`;
+}
+function cekPilihan(){ $('#btnBatch').disabled = !document.querySelector('.pil:checked'); }
+$('#pilihSemua').onchange = e => { document.querySelectorAll('.pil').forEach(c => c.checked = e.target.checked); cekPilihan(); };
+$('#cari').oninput = gambar; $('#fStatus').onchange = gambar;
+
+// ---------- tab ----------
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('[data-p]').forEach(p => p.classList.toggle('hide', p.dataset.p !== b.dataset.t));
+});
+
+// ---------- pratinjau & unduh ----------
+function bukaPdf(bytes, judul, aksiHtml=''){
+  if (st.blobUrl) URL.revokeObjectURL(st.blobUrl);
+  st.blobUrl = URL.createObjectURL(new Blob([bytes], {type:'application/pdf'}));
+  $('#mJudul').textContent = judul; $('#mAksi').innerHTML = aksiHtml;
+  $('#mFrame').src = st.blobUrl; $('#modal').classList.remove('hide');
+}
+function tutupModal(){ $('#modal').classList.add('hide'); $('#mFrame').src = 'about:blank'; }
+async function lihat(id, jenis){
+  try {
+    const f = await api('file', {id, type: jenis});
+    const r = st.rows.find(x => x.id === id);
+    const aksi = st.role === 'kaprodi' && r && r.status === 'menunggu'
+      ? `<button class="g" onclick="tutupModal();tandaTanganSatu('${id}')">Tanda tangani</button>` : '';
+    bukaPdf(b64KeBytes(f.b64), r ? r.perihal : f.nama_file, aksi);
+  } catch (e) { toast(e.message); }
+}
+function namaUnduh(r){ const dasar = (r.nama_file || r.perihal || 'surat').replace(/\.pdf$/i,'').replace(/[^\w\- ]+/g,'').trim().slice(0,80) || 'surat'; return dasar + '_TTE.pdf'; }
+function simpanBerkas(bytes, nama){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([bytes], {type:'application/pdf'}));
+  a.download = nama; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+async function unduh(id){
+  try { const f = await api('file', {id, type:'signed'}); simpanBerkas(b64KeBytes(f.b64), namaUnduh(st.rows.find(x => x.id === id) || {})); }
+  catch (e) { toast(e.message); }
+}
+async function salinTautan(id){
+  const u = urlVerifikasi(id);
+  try { await navigator.clipboard.writeText(u); toast('Tautan verifikasi disalin.'); } catch { prompt('Tautan verifikasi:', u); }
+}
+
+// ---------- tanda tangan ----------
+async function prosesTandaTangan(id, set = st.stempel, asli = null){
+  if (!asli) { const f = await api('file', {id, type:'original'}); asli = b64KeBytes(f.b64); }
+  const hasil = await bubuhkanStempel(asli, id, urlVerifikasi(id), st.ttd, set);
+  await api('sign', {id, signed_b64: bytesKeB64(hasil)});
+  return hasil;
+}
+// Buka layar seret stempel, lalu tanda tangani di posisi yang dipilih. Mengembalikan PDF hasil, atau null bila batal.
+async function tempatkanDanTandaTangan(id, asli, judul){
+  const h = await pilihPosisi(asli, judul, 'Tanda tangani di sini');
+  if (!h) return null;
+  if (h.bawaan) await simpanBawaan({ fx: h.fx, fy: h.fy }, false);
+  toast('Menandatangani…', 60000);
+  return await prosesTandaTangan(id, { ...st.stempel, fx: h.fx, fy: h.fy, halaman: h.halaman }, asli);
+}
+async function tandaTanganSatu(id){
+  const r = st.rows.find(x => x.id === id);
+  try {
+    const f = await api('file', {id, type:'original'});
+    const hasil = await tempatkanDanTandaTangan(id, b64KeBytes(f.b64), r ? r.perihal : (f.nama_file || id));
+    if (!hasil) return;
+    toast('Surat ditandatangani.'); muat();
+  } catch (e) { toast('Gagal: ' + e.message, 6000); }
+}
+async function tandaTanganTerpilih(){
+  const ids = [...document.querySelectorAll('.pil:checked')].map(c => c.value);
+  if (!ids.length || !confirm(`Tanda tangani ${ids.length} surat sekaligus dengan posisi stempel bawaan?\n\nUntuk mengatur posisi per surat, gunakan tombol Tanda tangani pada masing-masing surat.`)) return;
+  let ok = 0, gagal = [];
+  for (const [i, id] of ids.entries()) {
+    toast(`Menandatangani ${i + 1} dari ${ids.length}…`, 60000);
+    try { await prosesTandaTangan(id); ok++; } catch (e) { gagal.push(e.message); }
+  }
+  toast(`${ok} surat ditandatangani${gagal.length ? ', ' + gagal.length + ' gagal: ' + gagal[0] : ''}.`, 6000);
+  muat();
+}
+async function tolak(id){
+  const c = prompt('Alasan penolakan (akan terlihat oleh admin):'); if (c === null) return;
+  try { await api('reject', {id, catatan: c}); toast('Surat ditolak.'); muat(); } catch (e) { toast(e.message); }
+}
+async function cabut(id){
+  const c = prompt('Alasan pencabutan tanda tangan (akan tampil di halaman verifikasi):'); if (!c) return;
+  try { await api('revoke', {id, catatan: c}); toast('Tanda tangan dicabut.'); muat(); } catch (e) { toast(e.message); }
+}
+async function hapus(id){
+  if (!confirm('Hapus surat ini dari antrean?')) return;
+  try { await api('delete', {id}); toast('Surat dihapus.'); muat(); } catch (e) { toast(e.message); }
+}
+
+// ---------- unggah ----------
+let berkas = null;
+function pilihBerkas(f){
+  if (!f) return;
+  if (f.type !== 'application/pdf' && !/\.pdf$/i.test(f.name)) return toast('Pilih berkas PDF.');
+  if (f.size > 3 * 1024 * 1024) return toast('Ukuran PDF maksimal 3 MB. Kompres dulu berkasnya.');
+  berkas = f; $('#namaFile').textContent = f.name + ' (' + Math.round(f.size / 1024) + ' KB)';
+  const p = $('#fUnggah').elements.perihal; if (!p.value) p.value = f.name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ');
+}
+const drop = $('#drop');
+drop.onclick = () => $('#fileIn').click();
+$('#fileIn').onchange = e => pilihBerkas(e.target.files[0]);
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('on'); };
+drop.ondragleave = () => drop.classList.remove('on');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('on'); pilihBerkas(e.dataTransfer.files[0]); };
+
+async function unggah(e){
+  e.preventDefault();
+  if (!berkas) return toast('Pilih berkas PDF dulu.');
+  const fm = e.target.elements, frm = e.target, btn = $('#btnUnggah'); btn.disabled = true;
+  try {
+    const bytes = new Uint8Array(await berkas.arrayBuffer());
+    try { await PDFLib.PDFDocument.load(bytes, {ignoreEncryption:true}); } catch { throw new Error('PDF tidak bisa dibaca. Coba simpan ulang sebagai PDF.'); }
+    const { id } = await api('upload', {
+      nomor: fm.nomor.value, tanggal_surat: fm.tanggal_surat.value, perihal: fm.perihal.value,
+      pengirim: fm.pengirim.value, nama_file: berkas.name, file_b64: bytesKeB64(bytes) });
+    const perihal = fm.perihal.value, namaAsli = berkas.name, langsung = st.role === 'kaprodi' && $('#langsung').checked;
+    frm.reset(); berkas = null; $('#namaFile').textContent = ''; $('#langsung').checked = true;
+    if (langsung) {
+      const hasil = await tempatkanDanTandaTangan(id, bytes, perihal);
+      if (hasil) {
+        bukaPdf(hasil, perihal + ' (bertanda tangan)', `<button class="p" id="mUnduh">Unduh</button>`);
+        $('#mUnduh').onclick = () => simpanBerkas(hasil, namaUnduh({nama_file: namaAsli}));
+        toast('Surat diunggah dan ditandatangani.');
+      } else toast('Surat tersimpan di antrean, belum ditandatangani.');
+    } else toast('Surat masuk antrean tanda tangan.');
+    muat();
+  } catch (err) { toast(err.message, 6000); }
+  finally { btn.disabled = false; }
+}
+
+// ---------- pengaturan stempel ----------
+function isiFormStempel(){
+  const sel = $('#sHalaman'), h = String(st.stempel.halaman || 'terakhir');
+  if (![...sel.options].some(o => o.value === h)) sel.add(new Option('Halaman ' + h, h));
+  sel.value = h;
+  const s = st.stempel;
+  $('#sInfo').textContent = s.fx != null
+    ? `${Math.round(s.fx * 100)}% dari kiri, ${Math.round(s.fy * 100)}% dari atas halaman`
+    : 'Kanan bawah (bawaan awal) — belum pernah diseret';
+}
+async function simpanBawaan(ubah, beritahu = true){
+  st.stempel = { ...st.stempel, ...ubah };
+  isiFormStempel();
+  try { await api('settings', {stempel: st.stempel}, 'POST'); if (beritahu) toast('Posisi bawaan disimpan.'); }
+  catch (e) { toast(e.message); }
+}
+function ubahHalamanBawaan(){ simpanBawaan({ halaman: $('#sHalaman').value }); }
+
+// Halaman A4 kosong bergaris tipis sebagai bidang uji penempatan
+async function halamanA4(){
+  const { PDFDocument, rgb } = PDFLib;
+  const d = await PDFDocument.create(); const p = d.addPage([595.28, 841.89]);
+  const g = rgb(0.86, 0.88, 0.91);
+  p.drawRectangle({ x: 70, y: 760, width: 455, height: 40, color: g });
+  for (let y = 720, i = 0; y > 260; y -= 18, i++) p.drawRectangle({ x: 70, y, width: i % 5 === 4 ? 260 : 455, height: 6, color: g });
+  return await d.save();
+}
+async function aturBawaan(bytes){
+  try {
+    if (!bytes) bytes = await halamanA4();
+    const h = await pilihPosisi(bytes, 'Atur posisi bawaan stempel', 'Simpan sebagai bawaan', { modeBawaan: true });
+    if (h) await simpanBawaan({ fx: h.fx, fy: h.fy });
+  } catch (e) { toast('Gagal: ' + e.message); }
+}
+$('#aturIn').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return; e.target.value = '';
+  aturBawaan(new Uint8Array(await f.arrayBuffer()));
+};
+$('#ujiIn').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return; e.target.value = '';
+  try {
+    const hasil = await bubuhkanStempel(new Uint8Array(await f.arrayBuffer()), 'CONTOH0000', urlVerifikasi('CONTOH0000'), st.ttd, st.stempel);
+    bukaPdf(hasil, 'Uji stempel — tidak disimpan');
+  } catch (err) { toast('Gagal: ' + err.message); }
+};
+
+// ---------- seret & lepas stempel ----------
+let pdfjsSiap = false;
+function stempelHtml(){
+  const tanda = tandaDari(st.ttd);
+  const t = tataQR(urlVerifikasi('CONTOH0000'), 'XXXXXXXXXX', tanda), n = t.n;
+  let d = '';
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (t.gelap(r, k)) d += `M${k} ${r}h1v1h-1z`;
+  const lebar = t.kotak.bw - 2, jalur = (t.kotak.bh - 1) / t.baris.length, atas = t.kotak.r0 + 0.5;
+  const tebal = i => !(tanda && i === 0);
+  const em = (b, i) => [...b].reduce((x, ch) => x + (/[A-Z0-9]/.test(ch) ? (tebal(i) ? 0.72 : 0.67) : /[-.]/.test(ch) ? 0.34 : 0.52), 0);
+  const fs = Math.min(jalur / 1.18, ...t.baris.map((b, i) => lebar / em(b, i)));
+  const teks = t.baris.map((b, i) =>
+    `<text x="${n / 2}" y="${atas + jalur * (i + 0.5) + fs * 0.36}" font-size="${fs}" font-weight="${tebal(i) ? 700 : 400}" fill="${tanda && i === 0 ? '#0f3d6e' : '#14191f'}">${esc(b)}</text>`).join('');
+  return `<svg viewBox="0 0 ${n} ${n}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><path d="${d}" fill="#14191f"/><g font-family="Helvetica,Arial,sans-serif" text-anchor="middle">${teks}</g></svg>`;
+}
+// Menampilkan PDF dan stempel yang bisa diseret. Hasil: {fx, fy, halaman, bawaan} atau null bila batal.
+function pilihPosisi(bytes, judul, tombol, opsi = {}){
+  return new Promise(async resolve => {
+    if (!window.pdfjsLib) { toast('Pustaka pratinjau PDF gagal dimuat. Periksa koneksi internet lalu muat ulang.'); return resolve(null); }
+    if (!pdfjsSiap) { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; pdfjsSiap = true; }
+    let doc;
+    try { doc = await pdfjsLib.getDocument({ data: bytes.slice() }).promise; }
+    catch (e) { toast('PDF tidak bisa ditampilkan: ' + e.message); return resolve(null); }
+
+    const n = doc.numPages, set = st.stempel;
+    const md = $('#penempat'), body = $('#pBody'), wrap = $('#pWrap'), cv = $('#pCanvas'), stp = $('#pStamp'), inner = $('#pStampIn');
+    let hal = halamanTarget(set, n).slice(-1)[0] + 1, fx = null, fy = null, uk = null, tugas = null, seret = null, nomorRender = 0;
+
+    $('#pJudul').textContent = judul; $('#pOk').textContent = tombol;
+    $('#pSemua').checked = set.halaman === 'semua';
+    $('#pBawaan').checked = false;
+    $('#pSemuaWrap').classList.toggle('hide', !!opsi.modeBawaan);
+    $('#pBawaanWrap').classList.toggle('hide', !!opsi.modeBawaan);
+    inner.innerHTML = stempelHtml();
+    md.classList.remove('hide');
+
+    function letakkan(left, top){
+      const maxL = (uk.pw - STAMP_W) * uk.s, maxT = (uk.ph - STAMP_H) * uk.s;
+      left = Math.max(0, Math.min(left, maxL)); top = Math.max(0, Math.min(top, maxT));
+      stp.style.left = left + 'px'; stp.style.top = top + 'px';
+      fx = left / (uk.pw * uk.s); fy = top / (uk.ph * uk.s);
+    }
+    async function render(){
+      const saya = ++nomorRender;
+      const page = await doc.getPage(hal);
+      if (saya !== nomorRender) return;
+      const v1 = page.getViewport({ scale: 1 }), pw = v1.width, ph = v1.height;
+      if (fx == null) { const k = hitungKotak(set, pw, ph); fx = k.x / pw; fy = (ph - k.y - STAMP_H) / ph; }
+      const s = Math.max(0.3, Math.min(body.clientWidth - 28, 820) / pw);
+      const dpr = window.devicePixelRatio || 1, v = page.getViewport({ scale: s * dpr });
+      if (tugas) { try { tugas.cancel(); } catch (e) {} }
+      cv.width = Math.floor(v.width); cv.height = Math.floor(v.height);
+      cv.style.width = pw * s + 'px'; cv.style.height = ph * s + 'px';
+      uk = { pw, ph, s };
+      stp.style.width = STAMP_W * s + 'px'; stp.style.height = STAMP_H * s + 'px';
+      inner.style.transform = `scale(${s})`;
+      letakkan(fx * pw * s, fy * ph * s);
+      $('#pHal').textContent = `Hal ${hal} / ${n}`;
+      $('#pPrev').disabled = hal <= 1; $('#pNext').disabled = hal >= n;
+      if (!render.sudah) { render.sudah = true; stp.scrollIntoView({ block: 'center', inline: 'nearest' }); }
+      tugas = page.render({ canvasContext: cv.getContext('2d'), viewport: v });
+      try { await tugas.promise; } catch (e) {}
+    }
+
+    stp.onpointerdown = e => {
+      e.preventDefault(); e.stopPropagation(); stp.focus();
+      stp.setPointerCapture(e.pointerId);
+      const r = wrap.getBoundingClientRect();
+      seret = { dx: e.clientX - r.left - stp.offsetLeft, dy: e.clientY - r.top - stp.offsetTop };
+    };
+    stp.onpointermove = e => {
+      if (!seret) return;
+      const r = wrap.getBoundingClientRect();
+      letakkan(e.clientX - r.left - seret.dx, e.clientY - r.top - seret.dy);
+    };
+    stp.onpointerup = stp.onpointercancel = () => { seret = null; };
+    wrap.onpointerdown = e => {
+      if (stp.contains(e.target)) return;
+      e.preventDefault();
+      const r = wrap.getBoundingClientRect();
+      letakkan(e.clientX - r.left - STAMP_W * uk.s / 2, e.clientY - r.top - STAMP_H * uk.s / 2);
+    };
+    stp.onkeydown = e => {
+      const d = (e.shiftKey ? 10 : 1) * 2 * uk.s, map = { ArrowLeft: [-d, 0], ArrowRight: [d, 0], ArrowUp: [0, -d], ArrowDown: [0, d] };
+      if (!map[e.key]) return;
+      e.preventDefault();
+      letakkan(stp.offsetLeft + map[e.key][0], stp.offsetTop + map[e.key][1]);
+    };
+    $('#pPrev').onclick = () => { if (hal > 1) { hal--; render(); } };
+    $('#pNext').onclick = () => { if (hal < n) { hal++; render(); } };
+    let tunda; const ubahUkuran = () => { clearTimeout(tunda); tunda = setTimeout(render, 150); };
+    window.addEventListener('resize', ubahUkuran);
+    const esc_ = e => { if (e.key === 'Escape') selesai(null); };
+    document.addEventListener('keydown', esc_);
+
+    function selesai(hasil){
+      md.classList.add('hide');
+      window.removeEventListener('resize', ubahUkuran); document.removeEventListener('keydown', esc_);
+      stp.onpointerdown = stp.onpointermove = stp.onpointerup = stp.onpointercancel = wrap.onpointerdown = stp.onkeydown = null;
+      try { doc.destroy(); } catch (e) {}
+      resolve(hasil);
+    }
+    $('#pBatal').onclick = () => selesai(null);
+    $('#pOk').onclick = () => selesai({ fx, fy, halaman: $('#pSemua').checked ? 'semua' : hal, bawaan: $('#pBawaan').checked });
+
+    render.sudah = false;
+    try { await render(); } catch (e) { toast('Gagal menampilkan halaman: ' + e.message); selesai(null); }
+  });
+}
+
+// ---------- mulai ----------
+(function(){
+  const v = new URLSearchParams(location.search).get('v');
+  if (v) { $('#vVerify').classList.remove('hide'); return tampilVerifikasi(v.toUpperCase().replace(/[^A-Z0-9]/g, '')); }
+  st.token = bacaLokal('tte_token'); st.role = bacaLokal('tte_role');
+  if (st.token && st.role) mulaiApp(); else $('#vLogin').classList.remove('hide');
+})();
+</script>
+</body>
+</html>
